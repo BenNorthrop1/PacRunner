@@ -17,8 +17,14 @@ namespace Player
         int points;
 
         public Transform playerTransform;
+
+        public bool isFollowingTarget;
+
         public int destPoints;
 
+        public float followDetectionRadius;
+
+        public float playerDistance;
 
         public StateMachine sm;
 
@@ -26,6 +32,8 @@ namespace Player
         public StandingState standingState;
 
         public WalkingState walkingState;
+
+        public FollowState followState;
 
 
         
@@ -41,6 +49,7 @@ namespace Player
 
             standingState = new StandingState(this, sm);
             walkingState = new WalkingState(this, sm);
+            followState = new FollowState(this, sm);
             
             
             sm.Init(standingState);
@@ -49,6 +58,8 @@ namespace Player
         {
             sm.CurrentState.HandleInput();
             sm.CurrentState.LogicUpdate();
+
+            playerDistance = Vector3.Distance(playerTransform.transform.position, transform.position);
         }
 
         public void HandleMoveToPoints()
@@ -62,7 +73,10 @@ namespace Player
             navMeshAgent.destination = targets[points].transform.position;
         }
 
-        
+        public void HandleFollowPlayer()
+        {
+            navMeshAgent.destination = playerTransform.transform.position;
+        }
 
 
         void FixedUpdate()
